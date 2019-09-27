@@ -27,7 +27,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   void onClickNext(){
-    
+
   }
 
   @override
@@ -38,23 +38,19 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Container(
-          child: Center(
-            child: Stack(
-              children: <Widget>[
-                Text(
-                  "점을 찍으세요",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize:20,
-                  ),
-                ),
-                Container(
-                  //TODO: 그리기
-                )
-              ],
+        child: Stack(
+          children: <Widget>[
+            Text(
+              "점을 찍으세요",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize:20,
+              ),
             ),
-          ),
+            Container(
+              //TODO: 그리기
+            )
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
