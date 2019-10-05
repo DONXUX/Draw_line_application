@@ -34,6 +34,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final Draw _controller = Draw();
   static Geometric g = new Geometric(5);
   PathPainter mPathPainter = new PathPainter(g);
+  bool visibleGreet = true;
+  PathPainter fragPainter = null;
+  //bool lineVisible = false;
 
   /// 화면 터치 이벤트입니다.
   /// 터치된 좌표를 입력받고 해당 좌표에 점을 띄웁니다.
@@ -48,29 +51,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // 점 정보 리스트 저장 후 화면은 갱신합니다.
     setState(() {
+      visibleGreet = false;
       Point p = new Point(posx, posy);
       g.addPoint(p);
-      print("디버깅 : " + g.getPointListSize.toString());
+      //print("디버깅 : " + g.getPointListSize.toString());
     });
   }
 
-  @override
-  void paint(Canvas canvas, Size size){
-    final p1 = Offset(50, 50);
-    final p2 = Offset(250, 150);
-    final paint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 4;
-    canvas.drawLine(p1, p2, paint);
+  // 그려진 선이 보여집니다.
+  void onClickDraw() {
+    setState((){
+      fragPainter = mPathPainter;
+    });
   }
 
-  void onClickDraw() {
-    for(Point i in g.ps){
-      print("x 값 : " + i.x.toString());
-      print("y 값 : " + i.y.toString());
-    }
-
-    //mPathPainter.paint();
+  void onClickNext() {
+    setState((){
+      g.orderChange();
+    });
   }
 
   @override
@@ -103,19 +101,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   // 선이 그려지는 페인트 위젯
                   CustomPaint(
-                    painter: mPathPainter,
+                    painter: fragPainter,
                   ),
 
-                  Center(
-                    child: Text(
-                      "점을 찍어보세요!",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize:20,
+                  Visibility(
+                    visible: visibleGreet,
+                    child: Center(
+                      child: Text(
+                        "점을 찍어보세요!",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize:20,
+                        ),
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -138,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: null,
+        onPressed: onClickNext,
         tooltip: '다음',
         child: Icon(Icons.arrow_forward_ios),
       ),
@@ -159,6 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class PathPainter extends CustomPainter {
   Geometric g;
+  List<int> order;
 
   PathPainter(Geometric g) {
     this.g = g;
@@ -166,6 +167,7 @@ class PathPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    order = g.order;
     Paint paint = Paint()
       ..color = Colors.red
       ..style = PaintingStyle.stroke
@@ -173,8 +175,8 @@ class PathPainter extends CustomPainter {
 
     print("paint 함수 호출");
     for(int i = 0; i < g.getPointListSize - 1; i++){
-      Offset p1 = Offset(g.ps.elementAt(i).x, g.ps.elementAt(i).y);
-      Offset p2 = Offset(g.ps.elementAt(i + 1).x, g.ps.elementAt(i + 1).y);
+      Offset p1 = Offset(g.ps.elementAt(order[i]).x, g.ps.elementAt(order[i]).y);
+      Offset p2 = Offset(g.ps.elementAt(order[i + 1]).x, g.ps.elementAt(order[i + 1]).y);
       canvas.drawLine(p1, p2, paint);
     }
 
