@@ -38,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   PathPainter isPainterDisabled = null;
   bool isBtnDrawDisabled = true;
   bool isBtnNextDisabled = true;
+  bool isTapDownDisabled = false;
   //bool lineVisible = false;
 
   /// 화면 터치 이벤트입니다.
@@ -51,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
     posx = localOffset.dx - 16.0;
     posy = localOffset.dy - 100.0;
 
-    // 점 정보 리스트 저장 후 화면은 갱신합니다.
+    // 점 정보 리스트 저장 후 화면을 갱신합니다.
     setState(() {
       visibleGreet = false;
       Point p = new Point(posx, posy);
@@ -62,8 +63,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // 그리기 버튼 이벤트입니다.
   // 그려진 선이 보여집니다.
   void onClickDraw() {
+    isTapDownDisabled = true;
+    g.isCross();
+    if(g.cross){
+      g.orderChange();
+    }
     setState((){
       isBtnDrawDisabled = true;
       isBtnNextDisabled = false;
@@ -71,17 +78,24 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // 다음 버튼 이벤트입니다.
+  // 선을 그리는 순서를 교차점이 생기지 않을 때 까지 바꿉니다.
   void onClickNext() {
     setState((){
       g.orderChange();
     });
   }
 
+  // 초기화 버튼 이벤트입니다.
+  // 초기상태로 돌아갑니다.
   void onClickClear(){
     setState(() {
       g.init();
       isBtnDrawDisabled = true;
       isBtnNextDisabled = true;
+      isPainterDisabled = null;
+      isTapDownDisabled = false;
+      visibleGreet = true;
     });
   }
 
@@ -97,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Stack(
           children: <Widget>[
             GestureDetector(
-              onTapDown: (TapDownDetails details) => onTapDown(context, details),
+              onTapDown: (TapDownDetails details) => isTapDownDisabled ? null : onTapDown(context, details),
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
@@ -180,6 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
   );
 }
 
+// 선 그리기를 담당하는 클래스입니다.
 class PathPainter extends CustomPainter {
   Geometric g;
   List<int> order;
@@ -202,16 +217,6 @@ class PathPainter extends CustomPainter {
       Offset p2 = Offset(g.ps.elementAt(order[i + 1]).x, g.ps.elementAt(order[i + 1]).y);
       canvas.drawLine(p1, p2, paint);
     }
-
-    /*
-    Path path = Path();
-    // TODO: do operations here
-    for(int i = 0; i < g.getPointListSize - 1; i++){
-      path.lineTo(g.ps.elementAt(i).x, g.ps.elementAt(i).y);
-      canvas.drawPath(path, paint);
-    }
-        path.close();
-    */
   }
 
   @override
