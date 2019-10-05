@@ -35,7 +35,9 @@ class _MyHomePageState extends State<MyHomePage> {
   static Geometric g = new Geometric(5);
   PathPainter mPathPainter = new PathPainter(g);
   bool visibleGreet = true;
-  PathPainter fragPainter = null;
+  PathPainter isPainterDisabled = null;
+  bool isBtnDrawDisabled = true;
+  bool isBtnNextDisabled = true;
   //bool lineVisible = false;
 
   /// 화면 터치 이벤트입니다.
@@ -54,6 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
       visibleGreet = false;
       Point p = new Point(posx, posy);
       g.addPoint(p);
+      if(g.getPointListSize > 1)
+        isBtnDrawDisabled = false;
       //print("디버깅 : " + g.getPointListSize.toString());
     });
   }
@@ -61,13 +65,23 @@ class _MyHomePageState extends State<MyHomePage> {
   // 그려진 선이 보여집니다.
   void onClickDraw() {
     setState((){
-      fragPainter = mPathPainter;
+      isBtnDrawDisabled = true;
+      isBtnNextDisabled = false;
+      isPainterDisabled = mPathPainter;
     });
   }
 
   void onClickNext() {
     setState((){
       g.orderChange();
+    });
+  }
+
+  void onClickClear(){
+    setState(() {
+      g.init();
+      isBtnDrawDisabled = true;
+      isBtnNextDisabled = true;
     });
   }
 
@@ -87,7 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-
                   // 점이 그려지는 컨테이너
                   Container(
                     color: Colors.amberAccent,
@@ -101,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   // 선이 그려지는 페인트 위젯
                   CustomPaint(
-                    painter: fragPainter,
+                    painter: isPainterDisabled,
                   ),
 
                   Visibility(
@@ -115,6 +128,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                     ),
+                  ),
+                  Positioned(
+                      left: 0.0,
+                      bottom: 0.0,
+                      child:IconButton(
+                        icon: const Icon(Icons.close),
+                        color: Colors.red,
+                        iconSize: 48.0,
+                        onPressed: onClickClear,
+                      )
                   ),
                 ],
               ),
@@ -131,14 +154,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.amberAccent
                   ),
                 ),
-                onPressed: onClickDraw,
+                onPressed: isBtnDrawDisabled ? null : onClickDraw,
               ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: onClickNext,
+        onPressed: isBtnNextDisabled ? null : onClickNext,
         tooltip: '다음',
         child: Icon(Icons.arrow_forward_ios),
       ),

@@ -35,6 +35,10 @@ class Geometric {
 
   int get getPointListSize => this.ps.length;
 
+  void init(){
+    ps.clear();
+    order.clear();
+  }
   /// 점을 추가합니다.
   void addPoint(Point p1){
     if(ps.length >= _queueMaxSize)
@@ -102,4 +106,7 @@ class Geometric {
       swap(begin++, end--);
   }
 
+  bool isCross(){
+
+  }
 }
